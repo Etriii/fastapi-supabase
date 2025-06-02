@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+gunicorn
+sqlmodel
+psycopg2-binary
+httpx
+boto3
+python-multipart
