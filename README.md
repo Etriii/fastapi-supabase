@@ -1,6 +1,10 @@
 Install this following:
 ```
 pip install fastapi uvicorn gunicorn sqlmodel psycopg2-binary httpx
+
+or 
+
+pip install -r requirements.txt
 ```
 
 To run migrations:
