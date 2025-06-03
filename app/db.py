@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 # from sqlalchemy.inspection import inspect
 
 load_dotenv()
-# Replace with your actual database URL
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 engine = create_engine(DATABASE_URL)
@@ -63,3 +62,7 @@ def get_db():
 
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
+
+    
+def drop_all_tables_in_db():
+        SQLModel.metadata.drop_all(engine)

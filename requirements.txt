@@ -4,5 +4,6 @@ gunicorn
 sqlmodel
 psycopg2-binary
 httpx
+Faker
 boto3
 python-multipart

@@ -13,7 +13,7 @@ To run migrations:
 alembic revision --autogenerate -m "<migration_name>"
 ```
 In Windows:
-python -m alembic revision --autogenerate -m "<migration_name>"
+alembic revision --autogenerate -m "Migration Message"
 
 ``` run migration
 alembic upgrade head
@@ -21,6 +21,10 @@ alembic upgrade head
 In Windows:
 python -m alembic upgrade head
 
+To run seeders:
+
+python -m app.migrate_fresh_and_seed  
+note: it will reset your database data
 -------------------//////-------------------
 
 To run the app:
