@@ -7,3 +7,4 @@ httpx
 Faker
 boto3
 python-multipart
+bcrypt

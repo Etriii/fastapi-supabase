@@ -1,8 +1,8 @@
-"""Initial migration
+"""Initial Migration
 
-Revision ID: cdb22de32fb5
+Revision ID: 4e53c961dff3
 Revises: 
-Create Date: 2025-06-03 17:44:36.348492
+Create Date: 2025-06-04 16:06:33.129770
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'cdb22de32fb5'
+revision: str = '4e53c961dff3'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -27,7 +27,7 @@ def upgrade() -> None:
     sa.Column('short_name', sa.String(length=50), nullable=True),
     sa.Column('logo_url', sa.String(length=500), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_companies_name'), 'companies', ['name'], unique=True)
@@ -38,7 +38,7 @@ def upgrade() -> None:
     sa.Column('method', sa.Enum('GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD', 'OPTIONS', name='http_method_enum'), nullable=True),
     sa.Column('description', sa.String(length=1024), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_endpoints_method'), 'endpoints', ['method'], unique=False)
@@ -48,7 +48,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.String(length=1024), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_groups_description'), 'groups', ['description'], unique=True)
@@ -58,7 +58,7 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=True),
     sa.Column('description', sa.String(length=1024), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_permissions_description'), 'permissions', ['description'], unique=False)
@@ -67,9 +67,11 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('username', sa.String(length=255), nullable=True),
     sa.Column('email', sa.String(length=255), nullable=True),
+    sa.Column('email_verified_at', sa.DateTime(), nullable=True),
     sa.Column('password_hash', sa.String(length=1024), nullable=True),
+    sa.Column('profile', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
@@ -81,7 +83,7 @@ def upgrade() -> None:
     sa.Column('licensed_expiration_date', sa.DateTime(), nullable=False),
     sa.Column('custom_settings', sa.JSON(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -92,7 +94,7 @@ def upgrade() -> None:
     sa.Column('granted_by', sa.Integer(), nullable=False),
     sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -111,7 +113,7 @@ def upgrade() -> None:
     sa.Column('can_update', sa.Boolean(), nullable=False),
     sa.Column('can_delete', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['endpoint_id'], ['endpoints.id'], ),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
@@ -129,7 +131,7 @@ def upgrade() -> None:
     sa.Column('granted_by', sa.Integer(), nullable=False),
     sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
     sa.ForeignKeyConstraint(['permission_id'], ['permissions.id'], ),
@@ -146,7 +148,7 @@ def upgrade() -> None:
     sa.Column('granted_by', sa.Integer(), nullable=False),
     sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
@@ -162,7 +164,7 @@ def upgrade() -> None:
     sa.Column('granted_by', sa.Integer(), nullable=False),
     sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),

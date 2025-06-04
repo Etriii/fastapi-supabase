@@ -21,7 +21,7 @@ class CompanyBase(BaseModel):
         }
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CompanyResponse(BaseModel):
