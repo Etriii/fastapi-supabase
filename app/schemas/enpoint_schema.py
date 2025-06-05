@@ -17,7 +17,7 @@ class EndpointBase(BaseModel):
     route: str
     method: HttpMethod
     description: str
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -39,4 +39,4 @@ class EndpointResponse(BaseModel):
 
 class EndpointListResponse(BaseModel):
     status_code: int
-    data: List[EndpointBase] = Field(default_factory=list)
+    data: List[EndpointBase] = []

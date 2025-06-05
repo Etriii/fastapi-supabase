@@ -6,7 +6,7 @@ class GroupBase(BaseModel):
     id: Optional[int] = None
     name: str
     description: str
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -29,4 +29,4 @@ class GroupResponse(BaseModel):
 
 class GroupListResponse(BaseModel):
     status_code: int
-    data: List[GroupBase] = Field(default_factory=list)
+    data: List[GroupBase] = []

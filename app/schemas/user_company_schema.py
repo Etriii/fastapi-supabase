@@ -8,8 +8,8 @@ class UserCompanyBase(BaseModel):
     company_id: int
     joined_at: Optional[datetime] = None
     granted_by: Optional[int] = None
-    granted_at: Optional[datetime] = Field(default_factory=datetime.now)
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    granted_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -35,4 +35,4 @@ class UserCompanyResponse(BaseModel):
 
 class UserCompanyListResponse(BaseModel):
     status_code: int
-    data: List[UserCompanyBase] = Field(default_factory=list)
+    data: List[UserCompanyBase] = []

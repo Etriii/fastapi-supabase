@@ -7,7 +7,7 @@ class CompanyBase(BaseModel):
     name: str
     short_name: str
     logo_url: str
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -31,4 +31,4 @@ class CompanyResponse(BaseModel):
 
 class CompanyListResponse(BaseModel):
     status_code: int
-    data: List[CompanyBase] = Field(default_factory=list)
+    data: List[CompanyBase] = []

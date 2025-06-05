@@ -8,7 +8,7 @@ class CompanyConfigurationBase(BaseModel):
     users_allowed: int
     licensed_expiration_date: Optional[datetime] = None
     custom_settings: Optional[Dict[str, Any]] = None
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -33,4 +33,4 @@ class CompanyConfigurationResponse(BaseModel):
 
 class CompanyConfigurationListResponse(BaseModel):
     status_code: int
-    data: List[CompanyConfigurationBase] = Field(default_factory=list)
+    data: List[CompanyConfigurationBase] = []

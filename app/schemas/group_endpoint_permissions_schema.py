@@ -2,18 +2,19 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 
+
 class GroupEndpointPermissionBase(BaseModel):
     id: Optional[int] = None
     group_id: int
     permission_id: int
     endpoint_id: int
     granted_by: Optional[int] = None
-    granted_at: Optional[datetime] = Field(default_factory=datetime.now)
+    granted_at: Optional[datetime] = None
     can_create: bool = False
     can_read: bool = False
     can_update: bool = False
     can_delete: bool = False
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -43,4 +44,4 @@ class GroupEndpointPermissionResponse(BaseModel):
 
 class GroupEndpointPermissionListResponse(BaseModel):
     status_code: int
-    data: List[GroupEndpointPermissionBase] = Field(default_factory=list)
+    data: List[GroupEndpointPermissionBase] = []

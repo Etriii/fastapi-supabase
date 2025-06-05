@@ -7,8 +7,8 @@ class GroupPermissionBase(BaseModel):
     group_id: int
     permission_id: int
     granted_by: Optional[int] = None
-    granted_at: Optional[datetime] = Field(default_factory=datetime.now)
-    created_at: Optional[datetime] = Field(default_factory=datetime.now)
+    granted_at: Optional[datetime] = None
+    created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
     def to_dict(self):
@@ -31,4 +31,4 @@ class GroupPermissionResponse(BaseModel):
 
 class GroupPermissionListResponse(BaseModel):
     status_code: int
-    data: List[GroupPermissionBase] = Field(default_factory=list)
+    data: List[GroupPermissionBase] = []
