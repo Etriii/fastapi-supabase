@@ -18,7 +18,7 @@ def get_all_users(
     limit: Annotated[int, Query(le=100)] = 100,
 ):
     try:
-        users_query = select(db_models.User).offset(offset).limit(limit)
+        users_query = select(db_models.User).join().offset(offset).limit(limit)
         users = db.exec(users_query).all()
         return user_schema.UserListResponse(status_code=200, data=users)
     except Exception as e:

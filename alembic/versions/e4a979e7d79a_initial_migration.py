@@ -1,8 +1,8 @@
 """Initial Migration
 
-Revision ID: 4e53c961dff3
+Revision ID: e4a979e7d79a
 Revises: 
-Create Date: 2025-06-04 16:06:33.129770
+Create Date: 2025-06-07 17:32:22.646921
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4e53c961dff3'
+revision: str = 'e4a979e7d79a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -32,6 +32,16 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_companies_name'), 'companies', ['name'], unique=True)
     op.create_index(op.f('ix_companies_short_name'), 'companies', ['short_name'], unique=True)
+    op.create_table('custom_ui_settings',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('theme', sa.String(length=100), nullable=True),
+    sa.Column('primary_color', sa.String(length=50), nullable=True),
+    sa.Column('secondary_color', sa.String(length=50), nullable=True),
+    sa.Column('accent_color', sa.String(length=50), nullable=True),
+    sa.Column('timezone', sa.String(length=50), nullable=True),
+    sa.Column('default_language', sa.String(length=50), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('endpoints',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('route', sa.String(length=255), nullable=True),
@@ -81,18 +91,19 @@ def upgrade() -> None:
     sa.Column('company_id', sa.Integer(), nullable=False),
     sa.Column('users_allowed', sa.Integer(), nullable=False),
     sa.Column('licensed_expiration_date', sa.DateTime(), nullable=False),
-    sa.Column('custom_settings', sa.JSON(), nullable=True),
+    sa.Column('custom_settings_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
+    sa.ForeignKeyConstraint(['custom_settings_id'], ['custom_ui_settings.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_company_configurations_company_id'), 'company_configurations', ['company_id'], unique=True)
+    op.create_index(op.f('ix_company_configurations_custom_settings_id'), 'company_configurations', ['custom_settings_id'], unique=True)
     op.create_table('company_groups',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('company_id', sa.Integer(), nullable=False),
     sa.Column('granted_by', sa.Integer(), nullable=False),
-    sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
@@ -107,7 +118,6 @@ def upgrade() -> None:
     sa.Column('permission_id', sa.Integer(), nullable=False),
     sa.Column('endpoint_id', sa.Integer(), nullable=False),
     sa.Column('granted_by', sa.Integer(), nullable=False),
-    sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('can_create', sa.Boolean(), nullable=False),
     sa.Column('can_read', sa.Boolean(), nullable=False),
     sa.Column('can_update', sa.Boolean(), nullable=False),
@@ -129,7 +139,6 @@ def upgrade() -> None:
     sa.Column('group_id', sa.Integer(), nullable=False),
     sa.Column('permission_id', sa.Integer(), nullable=False),
     sa.Column('granted_by', sa.Integer(), nullable=False),
-    sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
@@ -143,47 +152,29 @@ def upgrade() -> None:
     op.create_table('user_companies',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('group_id', sa.Integer(), nullable=False),
     sa.Column('company_id', sa.Integer(), nullable=False),
-    sa.Column('joined_at', sa.DateTime(), nullable=False),
     sa.Column('granted_by', sa.Integer(), nullable=False),
-    sa.Column('granted_at', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['company_id'], ['companies.id'], ),
-    sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_user_companies_company_id'), 'user_companies', ['company_id'], unique=False)
-    op.create_index(op.f('ix_user_companies_granted_by'), 'user_companies', ['granted_by'], unique=False)
-    op.create_index(op.f('ix_user_companies_user_id'), 'user_companies', ['user_id'], unique=False)
-    op.create_table('user_groups',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('group_id', sa.Integer(), nullable=False),
-    sa.Column('granted_by', sa.Integer(), nullable=False),
-    sa.Column('granted_at', sa.DateTime(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['granted_by'], ['users.id'], ),
     sa.ForeignKeyConstraint(['group_id'], ['groups.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_user_groups_granted_by'), 'user_groups', ['granted_by'], unique=False)
-    op.create_index(op.f('ix_user_groups_group_id'), 'user_groups', ['group_id'], unique=False)
-    op.create_index(op.f('ix_user_groups_user_id'), 'user_groups', ['user_id'], unique=False)
+    op.create_index(op.f('ix_user_companies_company_id'), 'user_companies', ['company_id'], unique=False)
+    op.create_index(op.f('ix_user_companies_granted_by'), 'user_companies', ['granted_by'], unique=False)
+    op.create_index(op.f('ix_user_companies_group_id'), 'user_companies', ['group_id'], unique=False)
+    op.create_index(op.f('ix_user_companies_user_id'), 'user_companies', ['user_id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_index(op.f('ix_user_groups_user_id'), table_name='user_groups')
-    op.drop_index(op.f('ix_user_groups_group_id'), table_name='user_groups')
-    op.drop_index(op.f('ix_user_groups_granted_by'), table_name='user_groups')
-    op.drop_table('user_groups')
     op.drop_index(op.f('ix_user_companies_user_id'), table_name='user_companies')
+    op.drop_index(op.f('ix_user_companies_group_id'), table_name='user_companies')
     op.drop_index(op.f('ix_user_companies_granted_by'), table_name='user_companies')
     op.drop_index(op.f('ix_user_companies_company_id'), table_name='user_companies')
     op.drop_table('user_companies')
@@ -199,6 +190,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_company_groups_granted_by'), table_name='company_groups')
     op.drop_index(op.f('ix_company_groups_company_id'), table_name='company_groups')
     op.drop_table('company_groups')
+    op.drop_index(op.f('ix_company_configurations_custom_settings_id'), table_name='company_configurations')
     op.drop_index(op.f('ix_company_configurations_company_id'), table_name='company_configurations')
     op.drop_table('company_configurations')
     op.drop_index(op.f('ix_users_username'), table_name='users')
@@ -213,6 +205,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_endpoints_route'), table_name='endpoints')
     op.drop_index(op.f('ix_endpoints_method'), table_name='endpoints')
     op.drop_table('endpoints')
+    op.drop_table('custom_ui_settings')
     op.drop_index(op.f('ix_companies_short_name'), table_name='companies')
     op.drop_index(op.f('ix_companies_name'), table_name='companies')
     op.drop_table('companies')

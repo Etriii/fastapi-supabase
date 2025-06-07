@@ -16,6 +16,15 @@ class HttpMethod(str, Enum):
     OPTIONS = "OPTIONS"
 
 
+# class Roles(SQLModel, table=True):
+#     __tablename__ = "roles"
+#     id: int = Field(default=None, primary_key=True)
+
+# class Roles(SQLModel, table=True):
+#     __tablename__ = "user_roles"
+#     id: int = Field(default=None, primary_key=True)
+
+
 class Group(SQLModel, table=True):
     __tablename__ = "groups"
     id: int = Field(default=None, primary_key=True)
@@ -54,31 +63,28 @@ class User(SQLModel, table=True):
     )
 
 
-class UserGroup(SQLModel, table=True):
-    __tablename__ = "user_groups"
-    id: int = Field(default=None, primary_key=True)
-    user_id: int = Field(foreign_key="users.id", index=True)
-    group_id: int = Field(foreign_key="groups.id", index=True)
-    granted_by: int = Field(default=None, foreign_key="users.id", index=True)
-    granted_at: datetime = Field(default_factory=datetime.now)
-    created_at: datetime = Field(default_factory=datetime.now)
-    updated_at: Optional[datetime] = Field(
-        default=None, sa_column=Column(DateTime, nullable=True)
-    )
-
-
 class UserCompany(SQLModel, table=True):
     __tablename__ = "user_companies"
     id: int = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id", index=True)
+    group_id: int = Field(foreign_key="groups.id", index=True)
     company_id: int = Field(foreign_key="companies.id", index=True)
-    joined_at: datetime = Field(default=None)
     granted_by: int = Field(default=None, foreign_key="users.id", index=True)
-    granted_at: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = Field(
         default=None, sa_column=Column(DateTime, nullable=True)
     )
+
+
+class CustomUISettings(SQLModel, table=True):
+    __tablename__ = "custom_ui_settings"
+    id: int = Field(default=None, primary_key=True)
+    theme: str = Field(sa_column=Column(String(100)))
+    primary_color: str = Field(sa_column=Column(String(50)))
+    secondary_color: str = Field(sa_column=Column(String(50)))
+    accent_color: str = Field(sa_column=Column(String(50)))
+    timezone: str = Field(sa_column=Column(String(50)))
+    default_language: str = Field(sa_column=Column(String(50)))
 
 
 class CompanyConfiguration(SQLModel, table=True):
@@ -87,7 +93,9 @@ class CompanyConfiguration(SQLModel, table=True):
     company_id: int = Field(foreign_key="companies.id", unique=True, index=True)
     users_allowed: int
     licensed_expiration_date: datetime = Field(default=None)
-    custom_settings: dict = Field(default=None, sa_column=Column(JSON))
+    custom_settings_id: int = Field(
+        foreign_key="custom_ui_settings.id", unique=True, index=True
+    )
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = Field(
         default=None, sa_column=Column(DateTime, nullable=True)
@@ -111,7 +119,6 @@ class CompanyGroup(SQLModel, table=True):
     id: int = Field(default=None, primary_key=True)
     company_id: int = Field(foreign_key="companies.id", unique=True, index=True)
     granted_by: int = Field(default=None, foreign_key="users.id", index=True)
-    granted_at: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = Field(
         default=None, sa_column=Column(DateTime, nullable=True)
@@ -125,7 +132,6 @@ class GroupEndpointPermission(SQLModel, table=True):
     permission_id: int = Field(foreign_key="permissions.id", index=True)
     endpoint_id: int = Field(foreign_key="endpoints.id", index=True)
     granted_by: int = Field(default=None, foreign_key="users.id", index=True)
-    granted_at: datetime = Field(default_factory=datetime.now)
     can_create: bool = Field(default=False)
     can_read: bool = Field(default=False)
     can_update: bool = Field(default=False)
@@ -156,7 +162,6 @@ class GroupPermission(SQLModel, table=True):
     group_id: int = Field(foreign_key="groups.id", index=True)
     permission_id: int = Field(foreign_key="permissions.id", index=True)
     granted_by: int = Field(default=None, foreign_key="users.id", index=True)
-    granted_at: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
     updated_at: Optional[datetime] = Field(
         default=None, sa_column=Column(DateTime, nullable=True)
